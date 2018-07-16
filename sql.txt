@@ -1,0 +1,5 @@
+SQL:
+
+alter table wp_manga_chapters add index post_id_chapter_slug(post_id, chapter_slug(80));
+alter table wp_manga_volumes add index post_id(post_id);
+alter table wp_posts add index post_type(post_type);
