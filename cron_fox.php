@@ -6,11 +6,11 @@
  * and open the template in the editor.
  */
 
- require_once("/home/10manga.com/public_html/wp-load.php");
- $cron_nettruyen = new JSON_API_Net_Truyen_Controller();
+ require_once("/home/9comics.net/public_html/wp-load.php");
+ $cron_fox = new JSON_API_Net_Truyen_Controller();
 
  for($index_net = 1; $index_net < 2; $index_net++){
-	 $cron_nettruyen->getMultiMangaNetTruyenInAPage("http://www.nettruyen.com/?page=" . $index_net);	 
+    $cron_nettruyen->getMultiMangaFoxInAPage("http://www.nettruyen.com/?page=" . $index_net);	 
  }
  
 class Proxy {
@@ -44,35 +44,36 @@ class Proxy {
 }
 
 class JSON_API_Net_Truyen_Controller {
-	
-    function getMultiMangaNetTruyenInAPage($url) {
-        $index = 0;
-        $folder_mangas_sum = WP_MANGA_DATA_DIR . 'manga/nettruyen';
-        $a_page = $folder_mangas_sum . '/site' . ++$index . '.html';
+    private $index =0;
+
+    function getMultiMangaFoxInAPage($url) {
+        $folder_mangas_sum = WP_MANGA_DATA_DIR . 'manga/fox';
+        $a_page = $folder_mangas_sum . '/site' . ++$this->index . '.html';
         $DOM_home = $this->getDataFromUrlSSL($url, $a_page);
 
-        $manga_list_all = $this->getElementByClass($DOM_home, "image");
+        $manga_list_all = $this->getElementsByClass($DOM_home, "itemupdate");
         for ($k = 0; $k < 5; $k++) {
             $a_manga_url = $manga_list_all->item($k)->getElementsByTagName("a")->item(0)->getAttribute("href");
-            $addOrUpdate = $this->getAMangaNetTruyen($a_manga_url, $index);
-            if($addOrUpdate == FALSE){
+            $a_manga_url = "https://manga-fox.com" . $a_manga_url;
+            $addOrUpdate = $this->getAMangaFox($a_manga_url);
+            if ($addOrUpdate == FALSE) {
                 break;
             }
         }
         unlink($a_page);
     }
-    
-    function getAMangaNetTruyen($url_a_manga, $index) {
-		$addOrUpdate = FALSE;
-        $folder_mangas_sum = WP_MANGA_DATA_DIR . 'manga/nettruyen';
-        $a_manga_home = $folder_mangas_sum . '/site' . ++$index . '.html';
+
+    function getAMangaFox($url_a_manga) {
+        $addOrUpdate = FALSE;
+        $folder_mangas_sum = WP_MANGA_DATA_DIR . 'manga/fox';
+        $a_manga_home = $folder_mangas_sum . '/site' . ++$this->index . '.html';
         $DOM = $this->getDataFromUrlSSL($url_a_manga, $a_manga_home);
 
         $title_manga = $DOM->getElementsByTagName("h1")->item(0)->nodeValue;
         $slug_manga = sanitize_title($title_manga);
-        $all_chap = $DOM->getElementById("nt_listchapter")->getElementsByTagName("ul")->item(0)->getElementsByTagName("a");
-
-		$manga_id = $this->post_exists($title_manga);
+        $all_chap = $DOM->getElementById("list_chapter")->getElementsByTagName("a");
+        
+        $manga_id = $this->post_exists($title_manga);
 //add new post
         if ($manga_id == null) {
 //folder a manga
@@ -82,27 +83,21 @@ class JSON_API_Net_Truyen_Controller {
             }
 
             $info = "";
-            $info_div = $this->getElementByClass($DOM, "list-info")->item(0)->getElementsByTagName("li");
-            $index_li = 0;
-            if($info_div->length == 5){
-                $index_li =1;
-                $alter = $info_div->item(0)->getElementsByTagName("h2")->item(0)->nodeValue;
-            }else{
-                $alter = $title_manga;
-            }
-            
-            $author = trim($info_div->item($index_li)->getElementsByTagName("p")->item(1)->nodeValue);
-            $status = trim($info_div->item($index_li +1)->getElementsByTagName("p")->item(1)->nodeValue);
-            if ($status == "Đang tiến hành") {
+            $info_div = $this->getElementsByClass($DOM, "truyen_info_right")->item(0)->getElementsByTagName("li");
+            $alter = $info_div->item(0)->getElementsByTagName("span")->item(0)->nodeValue;
+
+            $author = trim($info_div->item(1)->getElementsByTagName("a")->item(0)->nodeValue);
+            $status = trim($info_div->item(3)->getElementsByTagName("a")->item(0)->nodeValue);
+            if ($status == "Ongoing") {
                 $status = "on-going";
             } else {
                 $status = "end";
             }
 
             $info .= "<title>" . $title_manga . "</title>\n";
-            $description = $this->getElementByClass($DOM, "detail-content")->item(0)->getElementsByTagName("p")->item(0)->nodeValue;
+            $description = $DOM->getElementById("noidungm")->nodeValue;
             $info .= "<description>" . $description . "</description>\n";
-            $tags = $info_div->item($index_li +2)->getElementsByTagName("a");
+            $tags = $info_div->item(2)->getElementsByTagName("a");
 
             $tags_name = "";
 
@@ -120,32 +115,35 @@ class JSON_API_Net_Truyen_Controller {
             $info .= "<tag>" . $tags_name . "</tag>\n";
             $info .= "<genre>" . $tags_name . "</genre>\n";
             $info .= "<status>" . $status . "</status>\n";
-            $image_src = $this->getElementByClass($DOM, "col-image")->item(0)->getElementsByTagName("img")->item(0)->getAttribute("src");
-            if(substr($image_src, 0,2) == "//"){
-                $image_src = str_replace("//", "http://", $image_src);
-            }
+
+            $image_src = $this->getElementsByClass($DOM, "info_image")->item(0)->getElementsByTagName("img")->item(0)->getAttribute("src");
+            $image_src = "https://manga-fox.com" . $image_src;
+
             $info .= "<image>" . $image_src . "</image>";
 
-            $this->saveImageFromUrlSSL($image_src, $folder_a_manga . '/' . $slug_manga . '.png');
+//            $this->saveImageFromUrlSSL($image_src, $folder_a_manga . '/' . $slug_manga . '.png');
 
             file_put_contents($folder_a_manga . "/info.txt", $info);
 
             for ($i = 0; $i < $all_chap->length; $i++) {
                 $chap_url = $all_chap->item($i)->getAttribute("href");
+                $chap_url = "https://manga-fox.com" . $chap_url;
+
                 $chap_name = $all_chap->item($i)->nodeValue;
+                $chap_name = str_replace($title_manga . ": ", "", $chap_name);
                 $chap_name = $this->removeSignImpossibleLinux($chap_name);
 
-                $this->downloadAChapNetTruyen($chap_url, $chap_name, $folder_a_manga, ++$index, $title_manga);
+                $this->downloadAChapFox($chap_url, $chap_name, $folder_a_manga, $title_manga);
             }
             $this->insert_manga($folder_a_manga, "video", "Truyện tranh");
-			$addOrUpdate = TRUE;
+            $addOrUpdate = TRUE;
         } else { // update or skip
 //check update
-			$manga_id = intval($manga_id);
-			$latest_chap = $all_chap->item(0)->nodeValue;
+            $manga_id = intval($manga_id);
+            $latest_chap = $all_chap->item(0)->nodeValue;
             $latest_chap = sanitize_title($latest_chap);
             global $wpdb;
-            $chapter = $wpdb->get_row("SELECT chapter_slug FROM wp_manga_chapters INNER JOIN wp_posts ON wp_manga_chapters.post_id = wp_posts.ID WHERE wp_manga_chapters.post_id = ".$manga_id." AND wp_manga_chapters.chapter_slug = '" . $latest_chap . "'");
+            $chapter = $wpdb->get_row("SELECT chapter_slug FROM wp_manga_chapters INNER JOIN wp_posts ON wp_manga_chapters.post_id = wp_posts.ID WHERE wp_manga_chapters.post_id = " . $manga_id . " AND wp_manga_chapters.chapter_slug = '" . $latest_chap . "'");
             $update = TRUE;
             if ($chapter->chapter_slug !== NULL) {
                 $update = FALSE;
@@ -159,61 +157,54 @@ class JSON_API_Net_Truyen_Controller {
                 for ($i = 0; $i < $all_chap->length; $i++) {
                     $update_chap = $all_chap->item($i)->nodeValue;
                     $update_chap_slug = sanitize_title($update_chap);
-                    $chapter_update = $wpdb->get_row("SELECT chapter_slug FROM wp_manga_chapters INNER JOIN wp_posts ON wp_manga_chapters.post_id = wp_posts.ID WHERE wp_manga_chapters.post_id = ".$manga_id." AND wp_manga_chapters.chapter_slug = '" . $update_chap_slug . "'");
+                    $chapter_update = $wpdb->get_row("SELECT chapter_slug FROM wp_manga_chapters INNER JOIN wp_posts ON wp_manga_chapters.post_id = wp_posts.ID WHERE wp_manga_chapters.post_id = " . $manga_id . " AND wp_manga_chapters.chapter_slug = '" . $update_chap_slug . "'");
                     if ($chapter_update->chapter_slug == NULL) {
                         $folder_chap = $folder_a_manga . '/' . $update_chap;
                         if (!file_exists($folder_chap)) {
                             mkdir($folder_chap, 0777, true);
                         }
                         $chap_url = $all_chap->item($i)->getAttribute("href");
-                        $chap_name = $all_chap->item($i)->nodeValue;
-                        $chap_name = $this->removeSignImpossibleLinux($chap_name);
+                        $chap_url = "https://manga-fox.com" . $chap_url;
 
-                        $this->downloadAChapNetTruyen($chap_url, $chap_name, $folder_a_manga, ++$index, $title_manga);
+                        $chap_name = $all_chap->item($i)->nodeValue;
+                        $chap_name = str_replace($title_manga . ": ", "", $chap_name);
+                        $chap_name = $this->removeSignImpossibleLinux($chap_name);
+                        
+                        $this->downloadAChapFox($chap_url, $chap_name, $folder_a_manga, $title_manga);
                     } else {
                         $this->upload_handler_crawl($this->post_exists($title_manga), $folder_a_manga);
                         break;
                     }
                 }
-				$addOrUpdate = TRUE;
+                $addOrUpdate = TRUE;
             }
         }
         unlink($a_manga_home);
-		return $addOrUpdate;
+        return $addOrUpdate;
     }
 
-    private function downloadAChapNetTruyen($url, $chap_name, $folder_a_manga, $index, $title_manga) {
-        $folder_mangas_sum = WP_MANGA_DATA_DIR . 'manga/nettruyen';
+    private function downloadAChapFox($url, $chap_name, $folder_a_manga, $title_manga) {
+        $folder_mangas_sum = WP_MANGA_DATA_DIR . 'manga/fox';
 //folder a manga
         $folder_a_chap = $folder_a_manga . '/' . $chap_name;
         if (!file_exists($folder_a_chap)) {
             mkdir($folder_a_chap, 0777, true);
         }
-        $a_manga_chap = $folder_mangas_sum . '/site' . ++$index . '.html';
+        $a_manga_chap = $folder_mangas_sum . '/site' . ++$this->index . '.html';
         $DOMChap = $this->getDataFromUrlSSL($url, $a_manga_chap);
 
-        $all_img = $this->getElementByClass($DOMChap, "reading-detail")->item(0)->getElementsByTagName("img");
+        $list_img = $DOMChap->getElementById("list_chapter");
+        $all_img = $list_img->getElementsByTagName("img");
         $data = "";
         for ($j = 0; $j < $all_img->length; $j++) {
             $img_src = $all_img->item($j)->getAttribute("src");
-            if (strpos($img_src, "https://") !== false) {
-                $img_src = str_replace("https://", "http://", $img_src);
-            }else if(substr($img_src, 0, 2) == "//"){
-                $img_src = str_replace("//", "http://", $img_src);
-            }
-            $data_original = $all_img->item($j)->getAttribute("data-original");
-            if($data_original == NULL){
-                $data_original = "";
-            }
-            $data .= '<img src="' . $img_src . '" alt="'.$title_manga . " - " . $chap_name . ' - Trang ' . $j . '"  data-original="' . $data_original . '"/>' . "\n";
+            $data .= '<img src="' . $img_src . '" alt="' . $title_manga . ' - ' . $chap_name . ' - Page ' . $j . '"/>' . "\n";
         }
         file_put_contents($folder_a_chap . '/data.txt', $data);
         unlink($a_manga_chap);
     }
 
     function insert_from_folder($path, $mangaType, $displayType) {
-        global $wp_manga_storage;
-
         $folder_mangas_sum = WP_MANGA_DATA_DIR . 'manga/' . $path;
         $folder_manga_list = glob($folder_mangas_sum . '/*');
 
@@ -224,17 +215,17 @@ class JSON_API_Net_Truyen_Controller {
         }
     }
 
-     private function getDataFromUrlSSL($url_a_manga, $path) {
-//        $options = array('http' => array('user_agent' => "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) coc_coc_browser/64.4.146 Chrome/58.4.3029.146 Safari/537.36"));
-//        $context = stream_context_create($options);
-//        $aMangaHomePage = file_get_contents($url_a_manga, false, $context);
-//        $a_manga_home = $path;
-//        $handle = fopen($a_manga_home, "w");
-//        fwrite($handle, $aMangaHomePage);
-//        fclose($handle);
-         
-        $proxy = new Proxy();
-        $proxy->curl($url_a_manga, $path);
+    private function getDataFromUrlSSL($url_a_manga, $path) {
+        $options = array('http' => array('user_agent' => "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) coc_coc_browser/64.4.146 Chrome/58.4.3029.146 Safari/537.36"));
+        $context = stream_context_create($options);
+        $aMangaHomePage = file_get_contents($url_a_manga, false, $context);
+        $a_manga_home = $path;
+        $handle = fopen($a_manga_home, "w");
+        fwrite($handle, $aMangaHomePage);
+        fclose($handle);
+
+//        $proxy = new Proxy();
+//        $proxy->curl($url_a_manga, $path);
 
         $DOM = new DOMDocument();
         $DOM->loadHTMLFile($path);
@@ -275,23 +266,9 @@ class JSON_API_Net_Truyen_Controller {
         $authors = explode(",", utf8_decode($DOM->getElementsByTagName('author')->item(0)->nodeValue));
         $artists = explode(",", utf8_decode($DOM->getElementsByTagName('artist')->item(0)->nodeValue));
         $tags = explode(",", utf8_decode($DOM->getElementsByTagName('tag')->item(0)->nodeValue));
-        if ($displayType == "text") {
-            array_push($tags, "Truyện chữ");
-        } else if ($displayType == "video") {
-            array_push($tags, "Video");
-        } else {
-            array_push($tags, "Truyện tranh");
-        }
 
         $years = explode(",", utf8_decode($DOM->getElementsByTagName('year')->item(0)->nodeValue));
         $genres = explode(",", utf8_decode($DOM->getElementsByTagName('genre')->item(0)->nodeValue));
-        if ($displayType == "text") {
-            array_push($genres, "Truyện chữ");
-        } else if ($displayType == "video") {
-            array_push($genres, "Video");
-        } else {
-            array_push($genres, "Truyện tranh");
-        }
 
         $views = rand(231241, 924196);
         $status = utf8_decode($DOM->getElementsByTagName('status')->item(0)->nodeValue);
@@ -515,10 +492,10 @@ class JSON_API_Net_Truyen_Controller {
     private function post_exists($post_name) {
         global $wpdb;
         $post_name = sanitize_title($post_name);
-        $result = $wpdb->get_row("SELECT id FROM wp_posts WHERE post_type = 'wp-manga' AND post_name = '" . $post_name  . "'");
-		if($result == null){
-			return null;
-		}
+        $result = $wpdb->get_row("SELECT id FROM wp_posts WHERE post_type = 'wp-manga' AND post_name = '" . $post_name . "'");
+        if ($result == null) {
+            return null;
+        }
         return $result->id;
     }
 
@@ -564,6 +541,7 @@ class JSON_API_Net_Truyen_Controller {
 //        $context = stream_context_create($options);
 //        $file = file_get_contents($url, false, $context);
 //        file_put_contents($image_path, $file);
+
         $proxy = new Proxy();
         $proxy->curl($url, $image_path);
     }
@@ -588,7 +566,7 @@ class JSON_API_Net_Truyen_Controller {
         return $innerHTML;
     }
 
-    private function getElementByClass($filePath, $classname) {
+    private function getElementsByClass($filePath, $classname) {
         $finder = new DomXPath($filePath);
         $spaner = $finder->query("//*[contains(@class, '$classname')]");
         return $spaner;

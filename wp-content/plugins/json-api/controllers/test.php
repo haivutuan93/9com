@@ -7,27 +7,26 @@
  */
 
 require_once("C:\\xampp\htdocs\9com\wp-load.php");
-$index = 1;
-
 
 class JSON_API_Test_Controller {
+    private $index =0;
+    
     public function test() {
         for ($index_net = 1; $index_net < 2; $index_net++) {
-            $this->getMultiMangaFoxInAPage("http://localhost/9com/fox/fox-home.html");
+            $this->getAMangaFox("http://localhost/9com/fox/fox-single.html");
         }
     }
 
     function getMultiMangaFoxInAPage($url) {
-
         $folder_mangas_sum = WP_MANGA_DATA_DIR . 'manga/fox';
-        $a_page = $folder_mangas_sum . '/site' . ++$index . '.html';
+        $a_page = $folder_mangas_sum . '/site' . ++$this->index . '.html';
         $DOM_home = $this->getDataFromUrlSSL($url, $a_page);
 
         $manga_list_all = $this->getElementsByClass($DOM_home, "itemupdate");
         for ($k = 0; $k < 5; $k++) {
             $a_manga_url = $manga_list_all->item($k)->getElementsByTagName("a")->item(0)->getAttribute("href");
-//            $a_manga_url = "https://manga-fox.com" . $a_manga_url;
-            $addOrUpdate = $this->getAMangaFox($a_manga_url, $index);
+            $a_manga_url = "https://manga-fox.com" . $a_manga_url;
+            $addOrUpdate = $this->getAMangaFox($a_manga_url);
             if ($addOrUpdate == FALSE) {
                 break;
             }
@@ -35,16 +34,16 @@ class JSON_API_Test_Controller {
         unlink($a_page);
     }
 
-    function getAMangaFox($url_a_manga, $index) {
+    function getAMangaFox($url_a_manga) {
         $addOrUpdate = FALSE;
         $folder_mangas_sum = WP_MANGA_DATA_DIR . 'manga/fox';
-        $a_manga_home = $folder_mangas_sum . '/site' . ++$index . '.html';
+        $a_manga_home = $folder_mangas_sum . '/site' . ++$this->index . '.html';
         $DOM = $this->getDataFromUrlSSL($url_a_manga, $a_manga_home);
 
         $title_manga = $DOM->getElementsByTagName("h1")->item(0)->nodeValue;
         $slug_manga = sanitize_title($title_manga);
         $all_chap = $DOM->getElementById("list_chapter")->getElementsByTagName("a");
-
+        
         $manga_id = $this->post_exists($title_manga);
 //add new post
         if ($manga_id == null) {
@@ -56,7 +55,6 @@ class JSON_API_Test_Controller {
 
             $info = "";
             $info_div = $this->getElementsByClass($DOM, "truyen_info_right")->item(0)->getElementsByTagName("li");
-            $index_li = 0;
             $alter = $info_div->item(0)->getElementsByTagName("span")->item(0)->nodeValue;
 
             $author = trim($info_div->item(1)->getElementsByTagName("a")->item(0)->nodeValue);
@@ -88,24 +86,25 @@ class JSON_API_Test_Controller {
             $info .= "<tag>" . $tags_name . "</tag>\n";
             $info .= "<genre>" . $tags_name . "</genre>\n";
             $info .= "<status>" . $status . "</status>\n";
-            
+
             $image_src = $this->getElementsByClass($DOM, "info_image")->item(0)->getElementsByTagName("img")->item(0)->getAttribute("src");
             $image_src = "https://manga-fox.com" . $image_src;
-            
+
             $info .= "<image>" . $image_src . "</image>";
 
-            $this->saveImageFromUrlSSL($image_src, $folder_a_manga . '/' . $slug_manga . '.png');
+//            $this->saveImageFromUrlSSL($image_src, $folder_a_manga . '/' . $slug_manga . '.png');
 
             file_put_contents($folder_a_manga . "/info.txt", $info);
 
             for ($i = 0; $i < $all_chap->length; $i++) {
                 $chap_url = $all_chap->item($i)->getAttribute("href");
-//                $chap_url = "https://manga-fox.com" . $chap_url;
-                
+                $chap_url = "https://manga-fox.com" . $chap_url;
+
                 $chap_name = $all_chap->item($i)->nodeValue;
+                $chap_name = str_replace($title_manga . ": ", "", $chap_name);
                 $chap_name = $this->removeSignImpossibleLinux($chap_name);
 
-                $this->downloadAChapFox($chap_url, $chap_name, $folder_a_manga, ++$index, $title_manga);
+                $this->downloadAChapFox($chap_url, $chap_name, $folder_a_manga, $title_manga);
             }
             $this->insert_manga($folder_a_manga, "video", "Truyện tranh");
             $addOrUpdate = TRUE;
@@ -137,11 +136,12 @@ class JSON_API_Test_Controller {
                         }
                         $chap_url = $all_chap->item($i)->getAttribute("href");
                         $chap_url = "https://manga-fox.com" . $chap_url;
-                        
-                        $chap_name = $all_chap->item($i)->nodeValue;
-                        $chap_name = $this->removeSignImpossibleLinux($chap_name);
 
-                        $this->downloadAChapFox($chap_url, $chap_name, $folder_a_manga, ++$index, $title_manga);
+                        $chap_name = $all_chap->item($i)->nodeValue;
+                        $chap_name = str_replace($title_manga . ": ", "", $chap_name);
+                        $chap_name = $this->removeSignImpossibleLinux($chap_name);
+                        
+                        $this->downloadAChapFox($chap_url, $chap_name, $folder_a_manga, $title_manga);
                     } else {
                         $this->upload_handler_crawl($this->post_exists($title_manga), $folder_a_manga);
                         break;
@@ -154,17 +154,18 @@ class JSON_API_Test_Controller {
         return $addOrUpdate;
     }
 
-    private function downloadAChapFox($url, $chap_name, $folder_a_manga, $index, $title_manga) {
+    private function downloadAChapFox($url, $chap_name, $folder_a_manga, $title_manga) {
         $folder_mangas_sum = WP_MANGA_DATA_DIR . 'manga/fox';
 //folder a manga
         $folder_a_chap = $folder_a_manga . '/' . $chap_name;
         if (!file_exists($folder_a_chap)) {
             mkdir($folder_a_chap, 0777, true);
         }
-        $a_manga_chap = $folder_mangas_sum . '/site' . ++$index . '.html';
+        $a_manga_chap = $folder_mangas_sum . '/site' . ++$this->index . '.html';
         $DOMChap = $this->getDataFromUrlSSL($url, $a_manga_chap);
 
-        $all_img = $DOMChap->getElementById("reading-detail")->getElementsByTagName("img");
+        $list_img = $DOMChap->getElementById("list_chapter");
+        $all_img = $list_img->getElementsByTagName("img");
         $data = "";
         for ($j = 0; $j < $all_img->length; $j++) {
             $img_src = $all_img->item($j)->getAttribute("src");
@@ -175,8 +176,6 @@ class JSON_API_Test_Controller {
     }
 
     function insert_from_folder($path, $mangaType, $displayType) {
-        global $wp_manga_storage;
-
         $folder_mangas_sum = WP_MANGA_DATA_DIR . 'manga/' . $path;
         $folder_manga_list = glob($folder_mangas_sum . '/*');
 
@@ -198,7 +197,7 @@ class JSON_API_Test_Controller {
 
 //        $proxy = new Proxy();
 //        $proxy->curl($url_a_manga, $path);
-//
+
         $DOM = new DOMDocument();
         $DOM->loadHTMLFile($path);
         return $DOM;
@@ -509,13 +508,13 @@ class JSON_API_Test_Controller {
     }
 
     private function saveImageFromUrlSSL($url, $image_path) {
-        $options = array('http' => array('user_agent' => "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) coc_coc_browser/64.4.146 Chrome/58.4.3029.146 Safari/537.36"));
-        $context = stream_context_create($options);
-        $file = file_get_contents($url, false, $context);
-        file_put_contents($image_path, $file);
-        
-//        $proxy = new Proxy();
-//        $proxy->curl($url, $image_path);
+//        $options = array('http' => array('user_agent' => "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) coc_coc_browser/64.4.146 Chrome/58.4.3029.146 Safari/537.36"));
+//        $context = stream_context_create($options);
+//        $file = file_get_contents($url, false, $context);
+//        file_put_contents($image_path, $file);
+
+        $proxy = new Proxy();
+        $proxy->curl($url, $image_path);
     }
 
     private function DOMinnerHTML(DOMNode $element) {
