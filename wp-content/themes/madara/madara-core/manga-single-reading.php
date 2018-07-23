@@ -27,7 +27,7 @@ add_filter('pre_get_document_title', function( $title ) {
 }, 999, 1);
 
 function custom_add_meta_description_tag() {
-    $description = $description . 'Đọc truyện tranh ' . get_the_title() . ' tiếng Việt mới nhất tại 10manga.com. Kho truyện tranh, truyện chữ lớn nhất Việt Nam';
+    $description = $description . 'Đọc truyện tranh ' . get_the_title() . ' tiếng Việt mới nhất tại 9comics.net. Kho truyện tranh, truyện chữ lớn nhất Việt Nam';
     ?>
     <meta name="description" content="<?php echo $description; ?>" />
     <meta http-equiv="content-language" content="vi" />
@@ -88,7 +88,7 @@ if ($madara_single_sidebar == 'full') {
     <div id="M329105ScriptRootC227556"> 
         <div id="M329105PreloadC227556"> Loading... 
         </div> 
-        <script> (function(){ var D=new Date(),d=document,b='body',ce='createElement',ac='appendChild',st='style',ds='display',n='none',gi='getElementById'; var i=d[ce]('iframe');i[st][ds]=n;d[gi]("M329105ScriptRootC227556")[ac](i);try{var iw=i.contentWindow.document;iw.open();iw.writeln("<ht"+"ml><bo"+"dy></bo"+"dy></ht"+"ml>");iw.close();var c=iw[b];} catch(e){var iw=d;var c=d[gi]("M329105ScriptRootC227556");}var dv=iw[ce]('div');dv.id="MG_ID";dv[st][ds]=n;dv.innerHTML=227556;c[ac](dv); var s=iw[ce]('script');s.async='async';s.defer='defer';s.charset='utf-8';s.src="//jsc.mgid.com/1/0/10manga.com.227556.js?t="+D.getYear()+D.getMonth()+D.getUTCDate()+D.getUTCHours();c[ac](s);})(); 
+        <script> (function(){ var D=new Date(),d=document,b='body',ce='createElement',ac='appendChild',st='style',ds='display',n='none',gi='getElementById'; var i=d[ce]('iframe');i[st][ds]=n;d[gi]("M329105ScriptRootC227556")[ac](i);try{var iw=i.contentWindow.document;iw.open();iw.writeln("<ht"+"ml><bo"+"dy></bo"+"dy></ht"+"ml>");iw.close();var c=iw[b];} catch(e){var iw=d;var c=d[gi]("M329105ScriptRootC227556");}var dv=iw[ce]('div');dv.id="MG_ID";dv[st][ds]=n;dv.innerHTML=227556;c[ac](dv); var s=iw[ce]('script');s.async='async';s.defer='defer';s.charset='utf-8';s.src="//jsc.mgid.com/1/0/9comics.net.227556.js?t="+D.getYear()+D.getMonth()+D.getUTCDate()+D.getUTCHours();c[ac](s);})(); 
         </script> 
     </div> 
 <!-- Composite End -->
@@ -112,7 +112,7 @@ if ($madara_single_sidebar == 'full') {
             var D=new Date(),d=document,b='body',ce='createElement',ac='appendChild',st='style',ds='display',n='none',gi='getElementById';
             var i=d[ce]('iframe');i[st][ds]=n;d[gi]("M329105ScriptRootC227554")[ac](i);try{var iw=i.contentWindow.document;iw.open();iw.writeln("<ht"+"ml><bo"+"dy></bo"+"dy></ht"+"ml>");iw.close();var c=iw[b];}
             catch(e){var iw=d;var c=d[gi]("M329105ScriptRootC227554");}var dv=iw[ce]('div');dv.id="MG_ID";dv[st][ds]=n;dv.innerHTML=227554;c[ac](dv);
-            var s=iw[ce]('script');s.async='async';s.defer='defer';s.charset='utf-8';s.src="//jsc.mgid.com/1/0/10manga.com.227554.js?t="+D.getYear()+D.getMonth()+D.getUTCDate()+D.getUTCHours();c[ac](s);})();
+            var s=iw[ce]('script');s.async='async';s.defer='defer';s.charset='utf-8';s.src="//jsc.mgid.com/1/0/9comics.net.227554.js?t="+D.getYear()+D.getMonth()+D.getUTCDate()+D.getUTCHours();c[ac](s);})();
     </script>
 </div>
 <!-- Composite End -->

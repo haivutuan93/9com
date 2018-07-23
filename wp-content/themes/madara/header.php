@@ -18,7 +18,7 @@
 	<?php 
     $is_home = is_front_page();
     if ($is_home) { ?>
-    <meta name="description" content="Kho truyện tranh, truyện chữ lớn nhất Việt Nam. Đọc hững bộ truyện phổ biến: conan, 7 viên ngọc rồng, naruto... Những bộ truyện tranh, truyện chữ chọn lọc mới nhất, hay nhất tại đây. Trải nghiệm đọc truyện tốt nhất tại 10manga.com" />
+    <meta name="description" content="Kho truyện tranh, truyện chữ lớn nhất Việt Nam. Đọc hững bộ truyện phổ biến: conan, 7 viên ngọc rồng, naruto... Những bộ truyện tranh, truyện chữ chọn lọc mới nhất, hay nhất tại đây. Trải nghiệm đọc truyện tốt nhất tại 9comics.net" />
     <?php } ?>
 	<?php
 		/**

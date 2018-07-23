@@ -89,7 +89,7 @@ dynamic_sidebar('footer-sidebar-3');
 									if ( $madara_copyright != '' ) {
 										echo '<p>' . wp_kses_post( $madara_copyright ) . '</p>';
 									} else {
-										echo '<p>' . esc_html__( '&copy; 2018. Bản quyền thuộc về 10manga.com', 'madara' ) . '</p>';
+										echo '<p>' . esc_html__( '&copy; 2018. Bản quyền thuộc về 9comics.net', 'madara' ) . '</p>';
 									}
 								?>
                             </div>

@@ -18,7 +18,7 @@
     }
     $name_slug = to_slug(get_the_title($post_id));
     $root_path = fs_get_root_path();
-    $site_url = 'https://10manga.com';
+    $site_url = 'https://9comics.net';
 
     $end_id = getEndPointId($post_id);
     $start_id = $end_id - 100000;
@@ -71,7 +71,7 @@ function pingSitemap($sitemapUrl) {
 function rikaki_insert_manga_chapter_start($var_manga) {
     $manga_slug = '/manga/';
     $root_path = fs_get_root_path();
-    $site_url = 'https://10manga.com';
+    $site_url = 'https://9comics.net';
     $link_url = $site_url . $manga_slug . $var_manga['chapter_slug'];
     $id = $var_manga['id'];
     $name_slug = to_slug(get_the_title($id));
@@ -89,7 +89,7 @@ function rikaki_insert_manga_chapter_start($var_manga) {
 // add to summary sitemap
     if (!file_exists($manga_story_path)) {
 // create manga month year xml file
-        $header_story = '<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type="text/xsl" href="https://10manga.com/wp-content/plugins/google-sitemap-generator/sitemap.xsl"?>' . "\n";
+        $header_story = '<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type="text/xsl" href="https://9comics.net/wp-content/plugins/google-sitemap-generator/sitemap.xsl"?>' . "\n";
         $header_story .= '<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
         $header_story .= '<url>' . "\n";
         $header_story .= '<loc>' . $link_url . '</loc>' . "\n";
@@ -132,7 +132,7 @@ function rikaki_insert_manga_start($post_id) {
     update_post_meta($post_id, '_kksr_ratings', $score);
 	
     $root_path = fs_get_root_path();
-    $site_url = 'https://10manga.com';
+    $site_url = 'https://9comics.net';
     $id = $post_id;
     $name_slug = to_slug(get_the_title($post_id));
 
@@ -166,7 +166,7 @@ function rikaki_insert_manga_start($post_id) {
 // add to summary sitemap
     if (!file_exists($manga_sum_path)) {
 // create manga month year xml file
-        $header_sum = '<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type="text/xsl" href="https://10manga.com/wp-content/plugins/google-sitemap-generator/sitemap.xsl"?>' . "\n" .
+        $header_sum = '<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type="text/xsl" href="https://9comics.net/wp-content/plugins/google-sitemap-generator/sitemap.xsl"?>' . "\n" .
                 '<sitemapindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/siteindex.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
 
         $string = '<sitemap>' . "\n";
@@ -190,7 +190,7 @@ function rikaki_insert_manga_start($post_id) {
     }
 
     if (!file_exists($manga_story_path)) {
-        $header_story = '<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type="text/xsl" href="https://10manga.com/wp-content/plugins/google-sitemap-generator/sitemap.xsl"?>' . "\n";
+        $header_story = '<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type="text/xsl" href="https://9comics.net/wp-content/plugins/google-sitemap-generator/sitemap.xsl"?>' . "\n";
         $header_story .= '<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
         $footer_story = '</urlset>' . "\n";
         file_put_contents($manga_story_path, $header_story . $footer_story);

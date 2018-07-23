@@ -5,7 +5,7 @@
 
 	use App\Madara;
 function custom_add_meta_description_tag_archive() {
-    $description = "Kho truyện tranh, truyện chữ lớn nhất Việt Nam. Đọc hững bộ truyện phổ biến: conan, 7 viên ngọc rồng, naruto... Những bộ truyện tranh, truyện chữ chọn lọc mới nhất, hay nhất tại đây. Trải nghiệm đọc truyện tốt nhất tại 10manga.com";
+    $description = "Kho truyện tranh, truyện chữ lớn nhất Việt Nam. Đọc hững bộ truyện phổ biến: conan, 7 viên ngọc rồng, naruto... Những bộ truyện tranh, truyện chữ chọn lọc mới nhất, hay nhất tại đây. Trải nghiệm đọc truyện tốt nhất tại 9comics.net";
     ?>
     <meta name="description" content="<?php echo $description; ?>" />
     <meta http-equiv="content-language" content="vi" />
