@@ -430,7 +430,6 @@
                                 'chapter_content'     => file_get_contents( $dir_lv2 )
                             );
 
-                            $this->insert_chapter( $chapter_args );
                             $this->insert_chapter($chapter_args);
                             $manga_chapter_slug = $wp_manga_storage->slugify($title_manga) . '/' .$wp_manga_storage->slugify(basename($dir_lv1)) . '/';
                             $var_manga = array();
