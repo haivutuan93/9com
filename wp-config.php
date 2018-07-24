@@ -1,4 +1,10 @@
 <?php
+
+/*** FTP login settings ***/
+define("FTP_HOST", "localhost");
+define("FTP_USER", "root");
+define("FTP_PASS", "Rikaki1492");
+define('FS_METHOD', 'direct');
 /**
  * The base configuration for WordPress
  *
