@@ -1,5 +1,19 @@
 SQL:
 
-alter table wp_manga_chapters add index post_id_chapter_slug(post_id, chapter_slug(80));
+//alter table wp_manga_chapters add index post_id_chapter_slug(post_id, chapter_slug(80));
 alter table wp_manga_volumes add index post_id(post_id);
-alter table wp_posts add index post_type(post_type);
+//alter table wp_posts add index post_type(post_type);
+
+ALTER TABLE wp_manga_chapters  ADD chapter_post_id bigint(20);
+
++ Reading page:
+SELECT SQL_CACHE * FROM wp_manga_chapters WHERE post_id = '107' AND chapter_slug = 'chapter-4_1'
+SELECT SQL_CACHE * FROM wp_manga_chapters WHERE post_id = '107' AND chapter_slug = 'chapter-4_1'
+SELECT SQL_CACHE * FROM wp_manga_volumes WHERE post_id = '107'
+SELECT SQL_CACHE * FROM wp_manga_chapters WHERE post_id = '107' AND volume_id = '0'
+SELECT SQL_CACHE * FROM wp_manga_volumes WHERE post_id = '107'						
+
+
+SELECT SQL_CACHE * FROM wp_manga_chapters WHERE chapter_id = '14'
+SELECT SQL_CACHE * FROM wp_manga_volumes WHERE post_id = '9'
+

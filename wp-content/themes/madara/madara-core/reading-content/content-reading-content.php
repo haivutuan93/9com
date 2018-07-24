@@ -7,8 +7,6 @@
 
 <?php
 
-	$wp_manga     = madara_get_global_wp_manga();
-	$post_id      = get_the_ID();
 	$name         = get_query_var('chapter');
 	$chapter_type = get_post_meta( get_the_ID(), '_wp_manga_chapter_type', true );
 	if( $name == '' ){
@@ -19,37 +17,35 @@
 //	$this_chapter = madara_get_global_wp_manga_chapter()->get_chapter_by_slug( get_the_ID(), $name );
         global $global_chapter_by_slug;
         $this_chapter  = $global_chapter_by_slug;
-
+        $chapter_post_id = $this_chapter['chapter_post_id'];
+        
 	if ( ! $this_chapter ) {
 		return;
 	}
-
-	$chapter_content = new WP_Query( array(
-		'post_parent' => $this_chapter['chapter_id'],
-		'post_type' => 'chapter_text_content'
-	) );
-
-	if( $chapter_content->have_posts() ){
-
-		$post = $chapter_content->the_post();
-
-		setup_postdata( $post );
+        
+        global $wpdb;
+        $sql = "SELECT post_content FROM " . $wpdb->posts ." WHERE id = ".$chapter_post_id;
+        $result = $wpdb->get_results ( $sql);
+        $post_content = "";      
+        foreach ( $result as $page )
+        {
+           $post_content = $page->post_content;
+        }
 
 		?>
 			<?php if( $chapter_type == 'text' ){ ?>
 				<div class="text-left">
-					<?php the_content(); ?>
+					<?php echo $post_content; ?>
 				</div>
 			<?php }elseif( $chapter_type == 'video'){
 			
 			?>
 				<div class="chapter-video-frame row">
-					<?php the_content(); ?>
+					<?php echo $post_content; ?>
 				</div>
 			<?php } ?>
 
 		<?php
 
-	}
 
 	wp_reset_postdata();

@@ -1280,7 +1280,7 @@
 		
 		function build_chapter_url_not_by_slug( $post_id, $chapter, $chapter_slug, $page_style = null, $host = null, $paged = null ) {
 
-			global $wp_manga_chapter, $wp_manga_volume, $wp_manga_storage;			
+			global $wp_manga_volume, $wp_manga_storage;			
 
 			$url = get_the_permalink( $post_id );
 
@@ -1331,9 +1331,11 @@
 				$url = add_query_arg( $addition_params, $url );
 			}
 			
-			if($url[strlen($url)-1] != '/'){
-				$url .= '/' ;                              
-                        }
+//			if($url[strlen($url)-1] != '/'){
+//				$url .= '/' ;                              
+//                        }
+                        
+                        $url .= '/' . $chapter[chapter_id] . '-' . $chapter[chapter_post_id] . '/';
 
 			return $url;
 
@@ -1395,9 +1397,10 @@
 				$url = add_query_arg( $addition_params, $url );
 			}
 			
-			if($url[strlen($url)-1] != '/'){
-				$url .= '/' ;                              
-            }
+//			if($url[strlen($url)-1] != '/'){
+//				$url .= '/' ;                              
+//            }
+                        $url .= '/' . $chapter[chapter_id] . '-' . $chapter[chapter_post_id] . '/';
 
 			return $url;
 

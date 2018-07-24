@@ -145,6 +145,20 @@
 			return false;
 
 		}
+                
+                function get_chapter_by_chapter_id( $chapter_id ) {
+
+			$chapter = $this->get_chapters( array(
+				'chapter_id' => $chapter_id
+			) );
+
+			if ( isset( $chapter[0] ) ) {
+				return $chapter[0];
+			}
+
+			return false;
+
+		}
 
 		function get_chapter_id_by_slug( $post_id, $chapter_slug ) {
                         global $global_chapter_by_slug;

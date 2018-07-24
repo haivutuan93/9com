@@ -327,8 +327,13 @@
     		);
 
     		$resp = wp_insert_post( $chapter_content_args );
+                if($resp){
+                    $update['chapter_post_id'] = $resp;
+                    $where['chapter_id'] = $chapter_id;
+                    $wp_manga_chapter->update_chapter($update, $where);
+                }
 
-            return $resp;
+            return $chapter_id .'-' .$resp . '/';
 
         }
 
@@ -406,11 +411,12 @@
                                     'chapter_content'     => file_get_contents( $chapter )
                                 );
 
-                                $this->insert_chapter( $chapter_args );
+                                $chapter_post_id = $this->insert_chapter( $chapter_args );
                                 $manga_chapter_slug = $wp_manga_storage->slugify($title_manga) . '/' . $wp_manga_storage->slugify(basename($dir_lv1)) . '/' . $wp_manga_storage->slugify(basename($dir_lv2)) . '/';
                                 $var_manga = array();
                                 $var_manga['id'] = $post_id;
                                 $var_manga['chapter_slug'] = $manga_chapter_slug;
+                                $var_manga['chapter_post_id'] = $chapter_post_id;
                                 do_action('rikaki_insert_manga_chapter', $var_manga);
 
 
@@ -430,11 +436,12 @@
                                 'chapter_content'     => file_get_contents( $dir_lv2 )
                             );
 
-                            $this->insert_chapter($chapter_args);
+                            $chapter_post_id = $this->insert_chapter($chapter_args);
                             $manga_chapter_slug = $wp_manga_storage->slugify($title_manga) . '/' .$wp_manga_storage->slugify(basename($dir_lv1)) . '/';
                             $var_manga = array();
                             $var_manga['id'] = $post_id;
                             $var_manga['chapter_slug'] = $manga_chapter_slug;
+                            $var_manga['chapter_post_id'] = $chapter_post_id;
                             do_action('rikaki_insert_manga_chapter', $var_manga);
                         }
 

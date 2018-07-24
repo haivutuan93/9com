@@ -72,7 +72,7 @@ function rikaki_insert_manga_chapter_start($var_manga) {
     $manga_slug = '/manga/';
     $root_path = fs_get_root_path();
     $site_url = 'https://9comics.net';
-    $link_url = $site_url . $manga_slug . $var_manga['chapter_slug'];
+    $link_url = $site_url . $manga_slug . $var_manga['chapter_slug'] . $var_manga['chapter_post_id'];
     $id = $var_manga['id'];
     $name_slug = to_slug(get_the_title($id));
 
